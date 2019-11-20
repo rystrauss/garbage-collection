@@ -25,9 +25,13 @@ public:
 
     GCPointer<T> &operator=(const GCPointer<T> &gcPointer);
 
-    GCPointer<T> &operator+(int i) const;
+    GCPointer<T> operator+(int i) const;
 
-    GCPointer<T> &operator-(int i) const;
+    GCPointer<T> operator-(int i) const;
+
+    GCPointer<T> &operator+=(int i);
+
+    GCPointer<T> &operator-=(int i);
 
     GCPointer<T> &operator++();
 
@@ -58,24 +62,36 @@ GCPointer<T> &GCPointer<T>::operator=(const GCPointer<T> &gcPointer) {
 }
 
 template<typename T>
-GCPointer<T> &GCPointer<T>::operator+(int i) const {
-    return &this + sizeof(T) * i;
+GCPointer<T> GCPointer<T>::operator+(int i) const {
+    return new GCPointer<T>(data + i);
 }
 
 template<typename T>
-GCPointer<T> &GCPointer<T>::operator-(int i) const {
-    return &this - sizeof(T) * i;
+GCPointer<T> GCPointer<T>::operator-(int i) const {
+    return new GCPointer<T>(data - i);
+}
+
+template<typename T>
+GCPointer<T> &GCPointer<T>::operator+=(int i) {
+    data += i;
+    return *this;
+}
+
+template<typename T>
+GCPointer<T> &GCPointer<T>::operator-=(int i) {
+    data -= i;
+    return *this;
 }
 
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator++() {
-    data += 1;
+    data++;
     return *this;
 }
 
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator--() {
-    data -= 1;
+    data--;
     return *this;
 }
 
