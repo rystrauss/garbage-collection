@@ -1,9 +1,5 @@
-//
-// Created by Ryan Strauss on 11/12/19.
-//
-
-#ifndef GARBAGE_COLLECTION_GCPOINTER_HPP
-#define GARBAGE_COLLECTION_GCPOINTER_HPP
+#ifndef GCPOINTER_HPP
+#define GCPOINTER_HPP
 
 #include <cstdint>
 
@@ -35,9 +31,15 @@ public:
 
     GCPointer<T> &operator++();
 
+    const GCPointer<T> operator++(int);
+
     GCPointer<T> &operator--();
 
+    const GCPointer<T> operator--(int);
+
     T *operator->() const;
+
+    T &operator*() const;
 
     T *pointer();
 
@@ -90,9 +92,23 @@ GCPointer<T> &GCPointer<T>::operator++() {
 }
 
 template<typename T>
+const GCPointer<T> GCPointer<T>::operator++(int) {
+    GCPointer<T> unmodified{*this};
+    data++;
+    return unmodified;
+}
+
+template<typename T>
 GCPointer<T> &GCPointer<T>::operator--() {
     data--;
     return *this;
+}
+
+template<typename T>
+const GCPointer<T> GCPointer<T>::operator--(int) {
+    GCPointer<T> unmodified{*this};
+    data--;
+    return unmodified;
 }
 
 template<typename T>
@@ -101,8 +117,13 @@ T *GCPointer<T>::operator->() const {
 }
 
 template<typename T>
+T &GCPointer<T>::operator*() const {
+    return *data;
+}
+
+template<typename T>
 T *GCPointer<T>::pointer() {
     return data;
 }
 
-#endif //GARBAGE_COLLECTION_GCPOINTER_HPP
+#endif //GCPOINTER_HPP
