@@ -2,6 +2,7 @@
 #define GCPOINTER_HPP
 
 #include <cstdint>
+#include <vector>
 
 
 template<typename T>
@@ -9,7 +10,7 @@ class GCPointer {
 
 private:
     T *data;
-    uint32_t references;
+    uint32_t *references;
 
 public:
 
@@ -46,20 +47,26 @@ public:
 };
 
 template<typename T>
-GCPointer<T>::GCPointer(T *pointer) : data{pointer}, references{1} {}
+GCPointer<T>::GCPointer(T *pointer) : data{pointer}, references{new uint32_t(1)} {}
 
 template<typename T>
-GCPointer<T>::GCPointer(const GCPointer<T> &gcPointer) : data{new T(gcPointer.data)}, references{1} {}
+GCPointer<T>::GCPointer(const GCPointer<T> &gcPointer) : data{gcPointer.data}, references{gcPointer.references} {
+    references++;
+}
 
 template<typename T>
 GCPointer<T>::~GCPointer() {
-    delete data;
+    if (--references == 0) {
+        delete references;
+        delete data;
+    }
 }
 
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator=(const GCPointer<T> &gcPointer) {
-    delete data;
+    ~this();
     data = gcPointer.data;
+    references = gcPointer.references;
     return *this;
 }
 
@@ -76,24 +83,30 @@ GCPointer<T> GCPointer<T>::operator-(int i) const {
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator+=(int i) {
     data += i;
+    ~this();
+    references = new uint32_t{1};
     return *this;
 }
 
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator-=(int i) {
     data -= i;
+    ~this();
+    references = new uint32_t{1};
     return *this;
 }
 
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator++() {
     data++;
+    ~this();
+    references = new uint32_t{1};
     return *this;
 }
 
 template<typename T>
 const GCPointer<T> GCPointer<T>::operator++(int) {
-    GCPointer<T> unmodified{*this};
+    GCPointer<T> unmodified{*this}; // TODO: Figure out how copy constructor needs to behave here
     data++;
     return unmodified;
 }
@@ -101,6 +114,8 @@ const GCPointer<T> GCPointer<T>::operator++(int) {
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator--() {
     data--;
+    ~this();
+    references = new uint32_t{1};
     return *this;
 }
 
