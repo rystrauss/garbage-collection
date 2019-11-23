@@ -58,6 +58,8 @@ public:
     // Copy Assignment
     GCPointer<T> &operator=(const GCPointer<T> &gcPointer);
 
+    GCPointer<T> &operator=(T *t);
+
     // Move Assignment
     GCPointer<T> &operator=(GCPointer<T> &&gcPointer) noexcept;
 
@@ -114,7 +116,16 @@ GCPointer<T>::~GCPointer() {
 
 template<typename T>
 GCPointer<T> &GCPointer<T>::operator=(const GCPointer<T> &gcPointer) {
+    decrement_references();
     data = gcPointer.data;
+    increment_references();
+    return *this;
+}
+
+template<typename T>
+GCPointer<T> &GCPointer<T>::operator=(T *t) {
+    decrement_references();
+    data = t;
     increment_references();
     return *this;
 }
