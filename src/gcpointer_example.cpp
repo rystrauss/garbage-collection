@@ -15,29 +15,56 @@ private:
         T data;
 
         explicit Node(T data, GCPointer<Node> next = GCPointer<Node>(nullptr)) : data{data}, next{std::move(next)} {
-            cout << "Node constructed" << endl;
+            cout << "Node constructed: " << data << endl;
         }
 
         ~Node() {
-            cout << "Node destroyed" << endl;
+            cout << "Node destroyed: " << data << endl;
         }
     };
 
     GCPointer<Node> head, tail;
+    int size;
+
+    GCPointer<Node> get_node(int i) {
+        GCPointer<Node> cur = head;
+
+        while (--i >= 0)
+            cur = cur->next;
+
+        return cur;
+    }
 
 public:
 
-    LinkedList() : head{GCPointer<Node>(nullptr)}, tail{GCPointer<Node>(nullptr)} {}
+    LinkedList() : head{GCPointer<Node>(nullptr)}, tail{GCPointer<Node>(nullptr)}, size{0} {}
 
     void add(T element) {
         if (head.pointer() == nullptr) {
             head = new Node(element);
             tail = head;
         } else {
-            Node *node = new Node(element);
+            GCPointer<Node> node{new Node(element)};
             tail->next = node;
             tail = node;
         }
+        ++size;
+    }
+
+    T remove(int i) {
+        T data;
+
+        if (i == 0) {
+            data = head->data;
+            head = head->next;
+        } else {
+            GCPointer<Node> cur = get_node(i - 1);
+            data = cur->next->data;
+            cur->next = cur->next->next;
+        }
+
+        size--;
+        return data;
     }
 
     void print() const {
@@ -60,6 +87,8 @@ int main() {
         list.add(i);
     }
 
+    list.print();
+    list.remove(3);
     list.print();
 
     return 0;
