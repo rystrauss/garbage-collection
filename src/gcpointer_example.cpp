@@ -106,8 +106,8 @@ int main() {
     list.remove(3);
     list.print();
 
-    // Reference Cycle
-    // Based on the example from https://www.educative.io/courses/a-quick-primer-on-garbage-collection-algorithms/jR8ml
+    // Reference Cycle: the nodes B, D, and E will never be freed, as this reference counting implementation
+    // does not check for cycles
     GCPointer<Node<char>> a{new Node<char>{'A', GCPointer<Node<char>>{new Node<char>{'B', GCPointer<Node<char>>{
             new Node<char>{'D', GCPointer<Node<char>>{new Node<char>{'E'}}}}}}}};
     GCPointer<Node<char>> c{new Node<char>{'C', a->next->next}};
