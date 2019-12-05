@@ -1,6 +1,6 @@
 #include <iostream>
 #include <utility>
-#include <reference_counting.h>
+#include <GCPointer.hpp>
 
 using std::cout;
 using std::endl;

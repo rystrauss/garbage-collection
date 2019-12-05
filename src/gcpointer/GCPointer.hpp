@@ -1,12 +1,8 @@
 #ifndef GCPOINTER_HPP
 #define GCPOINTER_HPP
 
-#include <vector>
-#include <unordered_map>
 #include "reference_counting.h"
 
-
-std::unordered_map<void *, int> references;
 
 /**
  * This class implements a smart pointer, which allows for automatic memory reclamation.
